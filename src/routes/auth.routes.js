@@ -14,7 +14,8 @@ router.route("/register").post(upload.single('avatar'),userRegistrationValidator
 router.route("/verify/:token").get(verifyUserEmail)
 
 router.route("/login").post(userLoginValidator(),validate,loginUser)
-router.route("/logout").get(logoutUser)
+
+router.route("/logout").post(isLoggedIn,logoutUser)
 
 
 router.route("/resend-verification-mail").get(resendVerificationEmail);
@@ -26,5 +27,7 @@ router.route("/reset-password/:token").get(changeCurrentPassword);
 
 router.route("/refresh-access-token").post(refreshAccessToken);
 
-router.route("/profile").get(isLoggedIn,getCurrentUser)
-export default router
+router.route("/profile").get(isLoggedIn,getCurrentUser);
+
+
+export default router;

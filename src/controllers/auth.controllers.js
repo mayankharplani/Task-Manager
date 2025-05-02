@@ -10,6 +10,9 @@ import { ApiError } from "../utils/api-error.js";
 import jwt from "jsonwebtoken"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+
+
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, fullname } = req.body;
   const avatarFile = req.file?.path
@@ -80,6 +83,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   // validate req.body fields using express-validator
@@ -131,6 +136,8 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const logoutUser = asyncHandler(async (req, res) => {
     const token = req.cookies.refreshToken;
     // console.log(req.cookies);
@@ -141,8 +148,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
     try {
         const userId = jwt.verify(token,process.env.REFRESHTOKEN_SECRET);
-        const user = await User.findById(userId.id);
-        console.log(user);
+        const user = await User.findById(userId.id).select("-password");
+        // console.log(user);
         if(!user){
             return res.status(400).json(
                 new ApiResponse(400,null,"User not Found",false)
@@ -164,6 +171,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 });
 
+
+
 const verifyUserEmail = asyncHandler(async (req, res) => {
   try {
         const token = req.params.token;
@@ -175,7 +184,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     const user = await User.findOne({
         emailVerificationToken: token,
         emailVerificationTokenExpiry: { $gt: Date.now() },
-    });
+    }).select("-password -refreshToken");
     if (!user) {
         return res
         .status(401)
@@ -193,10 +202,12 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const resendVerificationEmail = asyncHandler(async (req, res) => {
     const {email} = req.body;
     try {
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}).select("-password -refreshToken");
         if(!user){
             return res.status(400).json(
                 new ApiResponse(400,null,"User not found",false)
@@ -244,7 +255,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
     try {
         const userInfo = jwt.verify(token,process.env.REFRESHTOKEN_SECRET);
-        const user = await User.findById(userInfo.id);
+        const user = await User.findById(userInfo.id).select("-password");
         if(!user){
             throw new ApiError(404,"User not found");
         }
@@ -269,10 +280,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 });
 
+
+
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
     const {email} = req.body;
     try {
-        const user = await User.findOne({email})
+        const user = await User.findOne({email}).select("-password")
         if(!user){
             return res.status(400).json(
                 new ApiResponse(400,null,"User not Found",false)
@@ -300,6 +313,8 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         throw new ApiError(500,"Reset Password Error");
     }
 });
+
+
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const token = req.params.token;
@@ -331,8 +346,17 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     }
 });
 
+
+
 const getCurrentUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).select("-password -refreshToken")
+    const user = await User.findById(req.user.id).select("-password -refreshToken");
+    console.log(user);
+    return res.status(200).json(
+        new ApiResponse(200,user,"User Profile Data")
+    );
 });
+
+
+
 
 export { registerUser, verifyUserEmail, loginUser,logoutUser,resendVerificationEmail,refreshAccessToken,forgotPasswordRequest,changeCurrentPassword,getCurrentUser };
