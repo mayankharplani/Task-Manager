@@ -171,6 +171,7 @@ const deleteProject = asyncHandler( async (req,res) => {
         if(!project){
             throw new ApiError(400,"No Project Found");
         }
+        const deleteProjectMembers = await ProjectMember.deleteMany({project: projectId});
         return res.status(200).json(
             new ApiResponse(200,project,"Project Deleted Successfully")
         );
@@ -252,12 +253,6 @@ const getProjectMembers = asyncHandler( async (req,res) => {
 
 
 
-const updateProjectMember = asyncHandler( async (req,res) => {
-
-    
-
-})
-
 const updateMemberRole = asyncHandler( async (req,res) => {
     try {
         const projectId = req.params.projectId;
@@ -335,51 +330,4 @@ const deleteMember = asyncHandler( async (req,res) => {
 
 
 
-export {getProjects,getProjectById,createProject,getAllProjectsOfUser,updateProject,deleteProject,deleteMember,addMemberToProject,getProjectMembers,updateProjectMember,updateMemberRole}
-
-
-
-
-
-
-
-
-
-
-
-// const user = req.user;
-// const projectId = req.params.projectId;
-// if(!user.id){
-//     throw new ApiError(404,"Unauthorized Access");
-// }
-// if(!projectId){
-//     throw new ApiError(404,"No project Id Found");
-// }
-// // check user is admin member of this project or not
-// const member = await ProjectMember.findOne({user: user.id, project: projectId});
-// // here we are checking user is member of this project or not
-// if(!member){
-//     throw new ApiError(404,"You are not a member of this project");
-// }
-// // check for user is admin of this project or not
-// if(member.role !== "admin"){
-//     throw new ApiError(404, "You are not allowed to add member to this project");
-// }   
-// const {memberId} = req.body;
-// if(!memberId){
-//     throw new ApiError(404, "Invalid Member Id");
-// }
-// const existingMember = await ProjectMember.findOne({user: memberId});
-// if(existingMember){
-//     throw new ApiError(400,"Member already assigned to this project");
-// }
-// const newMember = await ProjectMember.create({
-//     user: memberId,
-//     project: projectId
-// });
-// if(!newMember){
-//     throw new ApiError(404,"Member Assigning Failed");
-// }
-// return res.status(201).json(
-//     new ApiResponse(201,newMember,"Member Added Successfully")
-// )
+export {getProjects,getProjectById,createProject,getAllProjectsOfUser,updateProject,deleteProject,deleteMember,addMemberToProject,getProjectMembers,updateMemberRole}

@@ -1,5 +1,5 @@
 import express from "express"
-import {getProjects,getProjectById,createProject, getAllProjectsOfUser, addMemberToProject, getProjectMembers, updateMemberRole, updateProjectMember, deleteMember, updateProject, deleteProject} from "../controllers/project.controllers.js"
+import {getProjects,getProjectById,createProject, getAllProjectsOfUser, addMemberToProject, getProjectMembers, updateMemberRole, deleteMember, updateProject, deleteProject} from "../controllers/project.controllers.js"
 import {isLoggedIn} from "../middlewares/auth.middleware.js"
 const router = express.Router();
 
