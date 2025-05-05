@@ -2,10 +2,13 @@ import {ApiError} from "../utils/api-error.js"
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { Note } from "../models/note.models.js";
+import { ProjectMember } from "../models/projectmember.models.js";
+import { urlencoded } from "express";
+import { Project } from "../models/project.models.js";
 
 
 
-const getNotes = async (req, res) => {
+const getNotes = asyncHandler (async (req, res) => {
     // get all notes
     try {
       const user = req.user;
@@ -14,9 +17,16 @@ const getNotes = async (req, res) => {
         throw new ApiError(404,"Unauthorized Access, Please Login")
       }
       if(!projectId){
-        throw new ApiError(404,"Invalid Project");
+        throw new ApiError(404,"Invalid Project Id");
       }
-
+      const project = await Project.findById(projectId);
+      if(!project){
+        throw new ApiError(400,"No Project Found with this Id");
+      }
+      const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
+      if(!loggedInUser){
+        throw new ApiError(400,"You are not the member of this project");
+      }
       const allNotes =  await Note.find({});
       if(!allNotes){
         throw new ApiError(400,"No Notes Found");
@@ -27,9 +37,9 @@ const getNotes = async (req, res) => {
     } catch (error) {
         throw new ApiError(500,error.message);
     }
-  };
+  });
   
-  const getNoteById = async (req, res) => {
+  const getNoteById = asyncHandler(async (req, res) => {
     // get note by id
     try {
       const user = req.user;
@@ -39,6 +49,10 @@ const getNotes = async (req, res) => {
       }
       if(!noteId){
         throw new ApiError(404,"Invalid Note");
+      }
+      const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
+      if(!loggedInUser){
+        throw new ApiError(400,"You are not the member of this project");
       }
       const note = await Note.findById(noteId);
       if(!note){
@@ -50,9 +64,9 @@ const getNotes = async (req, res) => {
     } catch (error) {
         throw new ApiError(500,error.message);
     }
-  };
+  });
   
-  const createNote = async (req, res) => {
+  const createNote = asyncHandler(async (req, res) => {
     // create note
     try {
       const user = req.user;
@@ -63,6 +77,14 @@ const getNotes = async (req, res) => {
       }
       if(!projectId){
         throw new ApiError(404,"Invalid Project");
+      }
+      const project = await Project.findById(projectId);
+      if(!project){
+        throw new ApiError(400,"No Project Found with this Id");
+      }
+      const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
+      if(!loggedInUser){
+        throw new ApiError(400,"You are not the member of this project");
       }
       const note = await Note.create({
         project: projectId,
@@ -78,9 +100,9 @@ const getNotes = async (req, res) => {
     } catch (error) {
       throw new ApiError(500,error.message);
     }
-  };
+  });
   
-  const updateNote = async (req, res) => {
+  const updateNote = asyncHandler(async (req, res) => {
     // update note
     try {
       const user = req.user;
@@ -95,6 +117,10 @@ const getNotes = async (req, res) => {
       if(!noteId){
         throw new ApiError(404,"Invalid Project");
       }
+      const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
+      if(!loggedInUser){
+        throw new ApiError(400,"You are not the member of this project");
+      }
       const updateNote = await Note.findById(noteId);
       if(!updateNote){
         throw new ApiError(400,"Note not found");
@@ -107,9 +133,9 @@ const getNotes = async (req, res) => {
     } catch (error) {
         throw new ApiError(500,error.message);
     }
-  };
+  });
   
-  const deleteNote = async (req, res) => {
+  const deleteNote = asyncHandler(async (req, res) => {
     // delete note
     try {
       const user = req.user;
@@ -119,6 +145,10 @@ const getNotes = async (req, res) => {
       }
       if(!noteId){
         throw new ApiError(404,"Invalid Project");
+      }
+      const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
+      if(!loggedInUser){
+        throw new ApiError(400,"You are not the member of this project");
       }
       const deleteNote = await Note.findById(noteId);
       if(!deleteNote){
@@ -130,7 +160,7 @@ const getNotes = async (req, res) => {
     } catch (error) {
         throw new ApiError(500,error.message);
     }
-  };
+  });
 
 
   export {getNotes,getNoteById,createNote,updateNote,deleteNote};
