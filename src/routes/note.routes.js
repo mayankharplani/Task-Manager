@@ -1,16 +1,17 @@
 import express from "express"
+const router = express.Router({mergeParams: true});
 import { isLoggedIn } from "../middlewares/auth.middleware.js";
 import { createNote, deleteNote, getNoteById, getNotes, updateNote } from "../controllers/note.controllers.js";
-const router = express.Router();
 
-router.route("/create-note/:projectId").post(isLoggedIn,createNote);
 
-router.route("/get-notes/:projectId").get(isLoggedIn,getNotes);
+router.route("/create-note").post(isLoggedIn,createNote);
 
-router.route("/get-notes/:noteId").post(isLoggedIn,getNoteById);
+router.route("/get-all").get(isLoggedIn,getNotes);
+
+router.route("/get-note").get(isLoggedIn,getNoteById);
 
 router.route("/update-note/:noteId").post(isLoggedIn,updateNote);
 
-router.route("/delete-note/:noteId").post(isLoggedIn,deleteNote);
+router.route("/delete-note/:noteId").delete(isLoggedIn,deleteNote);
 
 export default router

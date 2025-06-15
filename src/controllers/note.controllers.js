@@ -3,7 +3,6 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { Note } from "../models/note.models.js";
 import { ProjectMember } from "../models/projectmember.models.js";
-import { urlencoded } from "express";
 import { Project } from "../models/project.models.js";
 
 
@@ -44,11 +43,15 @@ const getNotes = asyncHandler (async (req, res) => {
     try {
       const user = req.user;
       const noteId = req.params.noteId;
+      const projectId = req.params.projectId;
       if(!user.id){
         throw new ApiError(404,"Unauthorized Access, Please Login")
       }
       if(!noteId){
         throw new ApiError(404,"Invalid Note");
+      }
+      if(!projectId){
+        throw new ApiError(404,"ProjectId not mentioned");
       }
       const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
       if(!loggedInUser){
@@ -108,6 +111,7 @@ const getNotes = asyncHandler (async (req, res) => {
       const user = req.user;
       const noteId = req.params.noteId;
       const {content} = req.body;
+      const projectId = req.params.projectId;
       if(!user.id){
         throw new ApiError(404,"Unauthorized Access, Please Login")
       }
@@ -116,6 +120,9 @@ const getNotes = asyncHandler (async (req, res) => {
       }
       if(!noteId){
         throw new ApiError(404,"Invalid Project");
+      }
+      if(!projectId){
+        throw new ApiError(404,"ProjectId not mentioned");
       }
       const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
       if(!loggedInUser){
@@ -140,17 +147,22 @@ const getNotes = asyncHandler (async (req, res) => {
     try {
       const user = req.user;
       const noteId = req.params.noteId;
+      const projectId = req.params.projectId;
+
       if(!user.id){
         throw new ApiError(404,"Unauthorized Access, Please Login")
       }
       if(!noteId){
         throw new ApiError(404,"Invalid Project");
       }
+      if(!projectId){
+        throw new ApiError(404,"ProjectId not mentioned");
+      }
       const loggedInUser = await ProjectMember.findOne({user: user.id, project: projectId});
       if(!loggedInUser){
         throw new ApiError(400,"You are not the member of this project");
       }
-      const deleteNote = await Note.findById(noteId);
+      const deleteNote = await Note.findByIdAndDelete(noteId);
       if(!deleteNote){
         throw new ApiError(400,"Deletion Failed");
       }

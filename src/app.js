@@ -19,7 +19,7 @@ app.use("/api/v1/healthcheck", healthCheckRouter)
 app.use("/api/v1/users",authRouter)
 app.use("/api/v1/users/project",projectRouter)
 
-app.use("/api/v1/users/project/:projectId/task",taskRouter)
+// app.use("/api/v1/users/project/:projectId/task",taskRouter)
 
-app.use("/api/v1/notes",noteRouter)
+// app.use("/api/v1/notes",noteRouter)
 export default app; 

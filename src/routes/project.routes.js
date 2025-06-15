@@ -1,6 +1,8 @@
 import express from "express"
 import {getProjects,getProjectById,createProject, getAllProjectsOfUser, addMemberToProject, getProjectMembers, updateMemberRole, deleteMember, updateProject, deleteProject} from "../controllers/project.controllers.js"
 import {isLoggedIn} from "../middlewares/auth.middleware.js"
+import noteRouter from "../routes/note.routes.js"
+import taskRouter from "../routes/task.routes.js"
 const router = express.Router();
 
 
@@ -23,4 +25,6 @@ router.route("/delete-member/:projectId/:memberId").post(isLoggedIn,deleteMember
 router.route("/update-project/:projectId").post(isLoggedIn,updateProject);
 router.route("/delete-project/:projectId").post(isLoggedIn,deleteProject);
 
+router.use("/:projectId/notes", noteRouter);
+router.use("/:projectId/tasks", taskRouter);
 export default router;
