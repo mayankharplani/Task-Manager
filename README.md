@@ -22,7 +22,6 @@ A robust, secure, and scalable backend API for project, task, and team managemen
 - **Enterprise-Ready Security:** JWT authentication, RBAC, CORS, and secure HTTP headers.
 - **Modular & Scalable:** Clean separation of concerns, modular routes/controllers.
 - **Team Collaboration:** Projects, tasks, subtasks, boards, and notes for real-world team workflows.
-- **Modern API Standards:** Fully documented with OpenAPI 3.0, CI-validated, and ready for frontend or third-party integration.
 - **Developer Experience:** Centralized error handling, logging, and easy local setup.
 
 ---
